@@ -5,6 +5,7 @@ var parseUrl = require("url").parse;
 var port = 8080;
 var ip = "127.0.0.1";
 
+// make routes a function
 var routes = {
   "/": handler.handleRequest
 };

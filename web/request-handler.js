@@ -3,12 +3,12 @@ var archive = require("../helpers/archive-helpers");
 var httpHelpers = require("./http-helpers");
 var parseUrl = require("url").parse;
 
-var getHTMLPage = function(req, res) {
+var serveHTMLPage = function(req, res) {
   // var asset = parseUrl(req.url).pathname;
-  httpHelpers.serveAssets(res, "/index.html");
+  httpHelpers.serveAssets(res, "siteAssets", "/index.html");
 };
 
-var postURL = function(req, res) {
+var handlePOST = function(req, res) {
   httpHelpers.collectData(req, function(data) {
     // readListOfUrls()
     archive.readListOfUrls(function(output) {
@@ -18,7 +18,7 @@ var postURL = function(req, res) {
       if(!archive.isUrlInList(urls, url)) {
         archive.addUrlToList(url, function(){
           console.log("URL added to sites.txt:", url);
-          httpHelpers.serveAssets(res, '/loading.html');
+          httpHelpers.serveAssets(res, "siteAssets", '/loading.html');
         });
       } else {
         // url is in sites.txt
@@ -27,10 +27,12 @@ var postURL = function(req, res) {
             // if it's downloaded
             console.log("in: ", files);
             //TODO: serve .html page to client
+            //TODO: NEXT LINE NOT WORKING RIGHT NOW
+            httpHelpers.serveAssets(res, "archivedSites", "/"+url);
           } else {
             // it's not downloaded
             console.log("Page still not downloaded: ", url);
-            httpHelpers.serveAssets(res, '/loading.html');
+            httpHelpers.serveAssets(res, "siteAssets", '/loading.html');
           }
         });
       }
@@ -41,9 +43,8 @@ var postURL = function(req, res) {
 exports.handleRequest = function (req, res) {
 
   var actions = {
-    "GET": getHTMLPage,
-    "POST": postURL
-    // "OPTIONS": 'getOptions'
+    "GET": serveHTMLPage,
+    "POST": handlePOST
   };
 
   var action = actions[req.method];

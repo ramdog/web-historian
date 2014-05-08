@@ -10,13 +10,30 @@ exports.headers = headers = {
   'Content-Type': "text/html"
 };
 
-exports.serveAssets = function(res, asset) {
+// for safekeeping
+// exports.serveAssets = function(res, asset) {
+//   // Write some code here that helps serve up your static files!
+//   // (Static files are things like html (yours or archived from others...), css, or anything that doesn't change often.)
+//   fs.readFile(archive.paths['siteAssets'] + asset, function(err, html) {
+//     if (err) {
+//       console.log("Error with readFile");
+//       console.log(archive.paths['siteAssets'] + asset);
+//       console.log(err);
+//     } else {
+//       res.writeHeader(200, headers);
+//       res.write(html.toString());
+//       res.end();
+//     }
+//   });
+// };
+
+exports.serveAssets = function(res, dir, asset) {
   // Write some code here that helps serve up your static files!
   // (Static files are things like html (yours or archived from others...), css, or anything that doesn't change often.)
-  fs.readFile(archive.paths['siteAssets'] + asset, function(err, html) {
+  fs.readFile(archive.paths[dir] + asset, function(err, html) {
     if (err) {
       console.log("Error with readFile");
-      console.log(archive.paths['siteAssets'] + asset);
+      console.log(archive.paths[dir] + asset);
       console.log(err);
     } else {
       res.writeHeader(200, headers);
@@ -25,6 +42,7 @@ exports.serveAssets = function(res, asset) {
     }
   });
 };
+
 
 exports.collectData = function(request, callback) {
   var data = "";
