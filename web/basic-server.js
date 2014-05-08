@@ -6,8 +6,7 @@ var port = 8080;
 var ip = "127.0.0.1";
 
 var routes = {
-  "/index.html": handler.handleRequest,
-  "/styles.css": handler.handleRequest
+  "/": handler.handleRequest
 };
 
 var server = http.createServer(function(request, response) {

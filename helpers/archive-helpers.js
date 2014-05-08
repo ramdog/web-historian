@@ -9,7 +9,7 @@ var _ = require('underscore');
  * customize it in any way you wish.
  */
 
-exports.paths = {
+exports.paths = paths = {
   'siteAssets' : path.join(__dirname, '../web/public'),
   'archivedSites' : path.join(__dirname, '../archives/sites'),
   'list' : path.join(__dirname, '../archives/sites.txt')
@@ -25,17 +25,44 @@ exports.initialize = function(pathsObj){
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
-exports.readListOfUrls = function(){
+exports.readListOfUrls = function(callback){
+  fs.readFile(paths['list'], function(err, output) {
+    if (err) {
+      console.log("Error reading file");
+    } else {
+      callback(output);
+    }
+  });
 };
 
-exports.isUrlInList = function(){
+exports.isUrlInList = function(urls, url){
+  return urls.indexOf(url) !== -1;
 };
 
-exports.addUrlToList = function(){
+exports.addUrlToList = function(url, callback) {
+  fs.appendFile(paths['list'], url+"\n", function(err) {
+    if(err) {
+      console.log("Error reading file");
+    } else {
+      callback();
+    }
+  });
 };
 
-exports.isURLArchived = function(){
+exports.isUrlArchived = function(urls, url){
 };
 
-exports.downloadUrls = function(){
+exports.downloadedUrls = function(url, callback){
+  fs.readdir(paths['archivedSites'], function(err, files) {
+    if(err) {
+      console.log("Error reading file");
+    } else {
+      callback(files);
+    }
+  });
 };
+
+exports.downloadUrls = function() {
+
+};
+

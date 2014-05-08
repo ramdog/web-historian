@@ -26,4 +26,15 @@ exports.serveAssets = function(res, asset) {
   });
 };
 
+exports.collectData = function(request, callback) {
+  var data = "";
+  request.on("data", function(partial){
+    data += partial;
+  });
+  request.on("end", function(){
+    callback(data);
+    // callback(JSON.parse(data));
+  });
+};
+
 // As you progress, keep thinking about what helper functions you can put here!
