@@ -3,36 +3,28 @@ var archive = require("../helpers/archive-helpers");
 var httpHelpers = require("./http-helpers");
 var parseUrl = require("url").parse;
 
-var serveHTMLPage = function(req, res) {
-  // var asset = parseUrl(req.url).pathname;
-  httpHelpers.serveAssets(res, "siteAssets", "/index.html");
-};
-
 var handlePOST = function(req, res) {
   httpHelpers.collectData(req, function(data) {
-    // readListOfUrls()
+    // get the post data from user
+    var url = data.slice(data.indexOf("=") + 1);
     archive.readListOfUrls(function(output) {
+      // check list of urls in sites.txt
       var urls = output.toString().split("\n");
-      // if !isURLInLIst()
-      var url = data.slice(data.indexOf("=") + 1);
       if(!archive.isUrlInList(urls, url)) {
         archive.addUrlToList(url, function(){
           console.log("URL added to sites.txt:", url);
-          httpHelpers.serveAssets(res, "siteAssets", '/loading.html');
+          httpHelpers.sendRedirect(res, '/loading.html');
         });
       } else {
         // url is in sites.txt
-        archive.downloadedUrls(url, function(files) {
+        archive.downloadedUrls(function(files) {
           if (archive.isUrlInList(files, url)) {
             // if it's downloaded
-            console.log("in: ", files);
-            //TODO: serve .html page to client
-            //TODO: NEXT LINE NOT WORKING RIGHT NOW
-            httpHelpers.serveAssets(res, "archivedSites", "/"+url);
+            httpHelpers.sendRedirect(res, "/"+url);
           } else {
             // it's not downloaded
             console.log("Page still not downloaded: ", url);
-            httpHelpers.serveAssets(res, "siteAssets", '/loading.html');
+            httpHelpers.sendRedirect(res, '/loading.html');
           }
         });
       }
@@ -40,21 +32,24 @@ var handlePOST = function(req, res) {
   });
 };
 
-exports.handleRequest = function (req, res) {
+var getSite = function(req, res) {
+  var urlPath = parseUrl(req.url).pathname;
+  if (urlPath === "/") {
+    urlPath = "/index.html";
+  }
+  httpHelpers.serveAssets(res, urlPath);
+};
 
+
+exports.handleRequest = function (req, res) {
   var actions = {
-    "GET": serveHTMLPage,
+    "GET": getSite,
     "POST": handlePOST
   };
-
   var action = actions[req.method];
-
   if (action) {
     action(req, res);
   } else {
-    // todo 404
-    // httpHelpers.serveAssets(res, "index.html");
+    httpHelpers.send404(res);
   }
-
-  // res.end(archive.paths.list);
 };
